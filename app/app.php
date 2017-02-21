@@ -2,7 +2,6 @@
     date_default_timezone_set('America/Los_Angeles');
     require_once __DIR__."/../vendor/autoload.php";
     require_once __DIR__."/../src/Item.php";
-    require_once __DIR__."/../src/Category.php";
 
 
     $app = new Silex\Application();
@@ -18,16 +17,17 @@
 
     $app->get("/", function() use ($app) {
 
-        return $app['twig']->render('items.html.twig');
+        return $app['twig']->render('items.html.twig', array('items' => Item::getAll()));
     });
+
 
     $app->post("/items", function() use($app) {
         $item = new Item($_POST['description']);
         $item->save();
-        return $app['twig']->render('items.html.twig', array('items' => Item::getAll()));
+        return $app['twig']->render('created_item.html.twig', array('new_item' => $item));
     });
 
-    $app->post("/", function() use($app) {
+    $app->post("/delete", function() use($app) {
         Item::deleteAll();
         return $app['twig']->render('items.html.twig');
     });
